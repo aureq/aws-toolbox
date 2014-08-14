@@ -1,0 +1,27 @@
+# please note this file should be place in /etc/cron.d
+# correct permissions are root:root, 0640
+# make sure this file name only contains [a-z,A-Z,0-9]
+
+# set and uncomment the cron as you like
+# .---------------- minute (0 - 59)
+# | .-------------- hour (0 - 23)
+# | |   .---------- day of month (1 - 31)
+# | |   | .-------- month (1 - 12) OR jan,feb,mar,apr ...
+# | |   | | .------ day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# | |   | | |
+# * *   * * *   user-name       command to be executed
+
+# set and uncomment the cron as you like
+
+# sunday snapshot expiring in one month
+#10 0     * * 6   root    /path/to/snapshot-my-ebs.sh "+1 month"
+
+# daily snapshot expiring in one week
+#0 0     * * *   root    /path/to/snapshot-my-ebs.sh "+1 week"
+
+# monthly snapshot (on the 1st on each month) that will never expire
+#0 0     1 * *   root    /path/to/snapshot-my-ebs.sh
+
+# daily snapshot cleanup
+#0 1     * * *   root    /path/to/clean-my-snapshots.sh
+
