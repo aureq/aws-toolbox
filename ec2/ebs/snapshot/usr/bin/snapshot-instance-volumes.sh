@@ -4,7 +4,10 @@ INSTANCE_ID=$(wget http://169.254.169.254/latest/meta-data/instance-id -q -O -)
 AZ=$(wget http://169.254.169.254/latest/meta-data/placement/availability-zone -q -O -)
 REGION=$(wget http://169.254.169.254/latest/meta-data/placement/availability-zone -q -O - | sed 's/.$//')
 
+# as installed manually
 AWS='/usr/local/bin/aws'
+# as installed via a package manager
+AWS2='/usr/bin/aws'
 
 JQ='/usr/bin/jq'
 
@@ -16,8 +19,13 @@ fi
 
 if [ ! -x "$AWS" ]
 then
-	echo "AWS cli is not installed. visit: http://aws.amazon.com/cli/"
-	exit 1
+	if [ ! -x "$AWS2" ]
+	then
+		echo "AWS cli is not installed. visit: http://aws.amazon.com/cli/"
+		exit 1
+	else
+		AWS="$AWS2"
+	fi
 fi
 
 if [ -z "$INSTANCE_ID" ]
