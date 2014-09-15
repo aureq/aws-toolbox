@@ -7,10 +7,12 @@ This folder contains 2 script to help you automate the snapshot creation from wi
   - `usr/bin/purge-expired-snapshots.sh`: This script checks all the snapshots that have the "Expire" tag and if the stored date is in the past, the snapshot is deleted. This scripts clean `all` expired snapshots regardless of the instance-id for all your regions.
   - `etc/cron.d/snapshotcron`: This file holds the cron settings and should be placed in /etc/cron.d/ I've added some examples in there to get you started more easily.
 
-Finally, in order to complete the installation, you will need:
+In order to complete the installation, you will need:
 
   * to install "jq"(2) which is required to parse the json data returned by the AWS CLI. `sudo apt-get install jq -y`
   * to ensure the AWS CLI is configured correctly and has the correct credentials(3). `aws configure`
+
+You may also want to create a dedicated IAM user, retrieve its access/secret key and assign the policy as attached in `iam_policy.json`.
 
 #### Resources ####
 1. JQ homepage: http://stedolan.github.io/jq/
