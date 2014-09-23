@@ -28,16 +28,16 @@ fi
 
 LOCAL_REGION=$(wget http://169.254.169.254/latest/meta-data/placement/availability-zone -q -O - | sed 's/.$//')
 
-for REGION in $($AWS --output json --region $LOCAL_REGION ec2 describe-regions | jq '.Regions[].RegionName' | sed 's/"//g')
+for REGION in $($AWS --output json --region $LOCAL_REGION ec2 describe-regions | $JQ '.Regions[].RegionName' | sed 's/"//g')
 do
-	for SNAPSHOTID in $($AWS --output json --region $REGION ec2 describe-snapshots --filters "Name=tag-key,Values=Expire" | jq '.Snapshots[].SnapshotId' | sed 's/"//g')
+	for SNAPSHOTID in $($AWS --output json --region $REGION ec2 describe-snapshots --filters "Name=tag-key,Values=Expire" | $JQ '.Snapshots[].SnapshotId' | sed 's/"//g')
 	do
-		EXPIRE=$($AWS --output json --region $REGION ec2 describe-snapshots --filters "Name=snapshot-id,Values=$SNAPSHOTID" | jq '.Snapshots[].Tags[]' | grep -A1 -B2 'Expire' | jq '.Value' | sed 's/"//g')
+		EXPIRE=$($AWS --output json --region $REGION ec2 describe-snapshots --filters "Name=snapshot-id,Values=$SNAPSHOTID" | $JQ '.Snapshots[].Tags[]' | grep -A1 -B2 'Expire' | $JQ '.Value' | sed 's/"//g')
 		EXPIRE=$(date --date="$EXPIRE" +%s)
 
 		if [ "$EXPIRE" -le "$TODAY" ]
 		then
-			RETURN=$($AWS --output json --region $REGION ec2 delete-snapshot --snapshot-id "$SNAPSHOTID" | jq '.return' | sed 's/"//g')
+			RETURN=$($AWS --output json --region $REGION ec2 delete-snapshot --snapshot-id "$SNAPSHOTID" | $JQ '.return' | sed 's/"//g')
 			if [ "$RETURN" != "true" ]
 			then
 				echo "Cannot delete snapshot $SNAPSHOTID"
