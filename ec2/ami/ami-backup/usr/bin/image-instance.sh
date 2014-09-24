@@ -36,11 +36,14 @@ then
 	fi
 fi
 
-while getopts "e:i:p:" opt
+while getopts "he:i:p:" opt
 do
 	case $opt in
 		e)
 			EXPIRE=$(date --date="$OPTARG" 2>/dev/null)
+		;;
+		h)
+			usage
 		;;
 		i)
 			INSTANCE_ID="$OPTARG"
