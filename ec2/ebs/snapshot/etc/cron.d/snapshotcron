@@ -23,5 +23,5 @@
 #0 0     1 * *   root    /usr/bin/snapshot-my-ebs.sh
 
 # daily snapshot cleanup
-#0 1     * * *   root    /usr/bin/clean-my-snapshots.sh
+#0 1     * * *   root    /usr/bin/purge-expired-snapshots.sh
 
