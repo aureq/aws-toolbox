@@ -64,6 +64,7 @@ then
 fi
 
 DATE=$(date)
+UNIX_TS=$(date +%s)
 
 INSTANCE_NAME=$($AWS $PROFILE --region $REGION --output json ec2 describe-instances --instance-ids "${INSTANCE_ID}" | $JQ '.Reservations[].Instances[].Tags[]' | grep -A1 -B2 'Name' | $JQ '.Value' | sed 's/"//g')
 if [ -z "$INSTANCE_NAME" ]
@@ -71,7 +72,7 @@ then
 	INSTANCE_NAME="$INSTANCE_ID"
 fi
 
-AMI_NAME="$(echo "backup-ami@$INSTANCE_NAME" | sed 's/[^A-Za-z0-9()\.\/_\-]//g')"
+AMI_NAME="$(echo "backup-ami@$INSTANCE_NAME-$UNIX_TS" | sed 's/[^A-Za-z0-9()\.\/_\-]//g')"
 
 IMAGE_ID=$($AWS $PROFILE --region $REGION --output json ec2 create-image --instance-id "$INSTANCE_ID" --no-reboot --name "$AMI_NAME" --description "backup-ami for $INSTANCE_NAME" | $JQ '.ImageId' | sed 's/"//g')
 if [ -z "$IMAGE_ID" ]
