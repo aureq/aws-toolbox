@@ -85,6 +85,7 @@ $AWS $PROFILE --output json --region $REGION ec2 create-tags --resources "$IMAGE
 	"Key=Name,Value=backup-ami@$INSTANCE_NAME" \
 	"Key=Instance,Value=$INSTANCE_ID" \
 	"Key=Date,Value=$DATE" \
+	"Key=Creator,Value=image-instance" \
 	"Key=AvailabilityZone,Value=$AZ" >/dev/null
 
 if [ ! -z "$EXPIRE" ]
@@ -129,6 +130,7 @@ do
 		"Key=Name,Value=backup-ami@$INSTANCE_NAME" \
 		"Key=Instance,Value=$INSTANCE_ID" \
 		"Key=Date,Value=$DATE" \
+		"Key=Creator,Value=image-instance" \
 		"Key=AvailabilityZone,Value=$AZ" >/dev/null
 
 	if [ ! -z "$EXPIRE" ]
