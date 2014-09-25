@@ -45,6 +45,9 @@ The third step is to configure when the scripts will be run and an eventual rete
 ## Feature requests ##
 You're welcome to request more features regarding these scripts, though I may not implement all of them as I develop and maintain these scripts on my spare time. You are also invited to issue a pull request with a meaningful description of your changes.
 
+## Acknowledgement ##
+Thanks to Colin for suggesting me this tool.
+
 #### Resources ####
 1. AWS CLI: http://aws.amazon.com/cli/
 2. JQ homepage: http://stedolan.github.io/jq/
