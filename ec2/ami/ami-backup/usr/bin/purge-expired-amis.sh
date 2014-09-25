@@ -52,8 +52,18 @@ do
 	esac
 done
 
-
-LOCAL_REGION=$(wget http://169.254.169.254/latest/meta-data/placement/availability-zone -q -O - | sed 's/.$//')
+if [ ! -z "$REGIONS" ]
+then
+	LOCAL_REGION=$(echo $REGIONS | awk -F ',' '{print $1}')
+else
+	# trying to guess the local region if possible
+	LOCAL_REGION=$(wget http://169.254.169.254/latest/meta-data/placement/availability-zone -q -O - | sed 's/.$//')
+	if [ -z "$LOCAL_REGION" ]
+	then
+		echo "cannot determine the local region, please use '-r region' with this script."
+		exit 1
+	fi
+fi
 
 if [ -z "$REGIONS" ]
 then
