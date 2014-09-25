@@ -14,14 +14,15 @@
 # set and uncomment the cron as you like
 
 # sunday snapshot expiring in one month
-#10 0     * * 6   root    /usr/bin/image-instance.sh "+1 month"
+#10 0     * * 6   root    /usr/bin/image-instance.sh -p ami-backup "+1 month"
 
 # daily snapshot expiring in one week
-#0 0     * * *   root    /usr/bin/image-instance.sh "+1 week"
+#0 0     * * *   root    /usr/bin/image-instance.sh -p ami-backup "+1 week"
 
 # monthly snapshot (on the 1st on each month) that will never expire
+# this command will use the profile 'default'
 #0 0     1 * *   root    /usr/bin/image-instance.sh
 
 # daily snapshot cleanup
-#0 1     * * *   root    /usr/bin/purge-expired-amis.sh
+#0 1     * * *   root    /usr/bin/purge-expired-amis.sh -p ami-backup
 
