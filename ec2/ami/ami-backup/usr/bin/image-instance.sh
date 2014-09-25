@@ -1,9 +1,5 @@
 #!/bin/bash
 
-INSTANCE_ID=$(wget http://169.254.169.254/latest/meta-data/instance-id -q -O -)
-AZ=$(wget http://169.254.169.254/latest/meta-data/placement/availability-zone -q -O -)
-REGION=$(echo $AZ | sed 's/.$//')
-
 # as installed manually
 AWS='/usr/local/bin/aws'
 # as installed via a package manager
@@ -12,9 +8,10 @@ AWS2='/usr/bin/aws'
 JQ='/usr/bin/jq'
 
 function usage() {
-	echo -e "$0 [-p profile_name] [-i instance_id] [-e expiry_date]"
+	echo -e "$0 [-p profile_name] [-i instance_id] [-r region] [-e expiry_date]"
 	echo -e "\t-p profile_name: the aws profile name, default is 'default'. if specified, this should be specified first."
-	echo -e "\t-i instance_id: the instance-id to create an image for, default is the local instance-id"
+	echo -e "\t-i instance_id: the instance-id to create an image for, default is the local instance-id."
+	echo -e "\t-r region: the EC2 region your instance is in. If unspecified, the metadata server will be queried."
 	echo -e "\t-e expiry_date: when the ami should be deleted. relative time can be provided like '+1 week'. default: never"
 	exit 1
 }
@@ -47,11 +44,12 @@ do
 		;;
 		i)
 			INSTANCE_ID="$OPTARG"
-			AZ=$($AWS $PROFILE --region $REGION --output json ec2 describe-instances --instance-ids "${INSTANCE_ID}" | $JQ '.Reservations[].Instances[].Placement.AvailabilityZone' | sed 's/"//g')
-			REGION=$(echo $AZ | sed 's/.$//')
 		;;
 		p)
 			PROFILE="--profile $OPTARG"
+		;;
+		r)
+			REGION="$OPTARG"
 		;;
 		*)
 			echo "this option '-$OPTARG' is not supported"
@@ -60,11 +58,36 @@ do
 	esac
 done
 
+# we try to guess the local instance-id as we may be running in EC2
 if [ -z "$INSTANCE_ID" ]
 then
-	echo "cannot retrieve instance-id"
-	exit 1
+	INSTANCE_ID=$(wget http://169.254.169.254/latest/meta-data/instance-id -q -O -)
+	if [ -z "$INSTANCE_ID" ]
+	then
+		echo "cannot retrieve instance-id"
+		exit 1
+	fi
 fi
+
+# if the region is unspecified, we try to guess it
+if [ -z "$REGION" ]
+then
+	AZ=$(wget http://169.254.169.254/latest/meta-data/placement/availability-zone -q -O -)
+	if [ -z "$AZ" ]
+	then
+		echo "cannot determine the region for instance $INSTANCE_ID"
+		exit 1
+	fi
+	REGION=$(echo $AZ | sed 's/.$//')
+else
+	AZ=$($AWS $PROFILE --region $REGION --output json ec2 describe-instances --instance-ids "${INSTANCE_ID}" | $JQ '.Reservations[].Instances[].Placement.AvailabilityZone' | sed 's/"//g')
+	if [ -z "$AZ" ]
+	then
+		echo "cannot determine the availability zone for instance $INSTANCE in region $REGION"
+		exit 1
+	fi
+fi
+
 
 DATE=$(date)
 UNIX_TS=$(date +%s)
