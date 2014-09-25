@@ -2,7 +2,7 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "Ec2SnapshotPolicy",
+      "Sid": "Ec2ImageInstancePolicy",
       "Effect": "Allow",
       "Action": [
         "ec2:Describe*",
