@@ -33,7 +33,7 @@ then
 	fi
 fi
 
-while getopts "he:i:p:" opt
+while getopts "he:i:p:r:" opt
 do
 	case $opt in
 		e)
