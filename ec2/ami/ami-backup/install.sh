@@ -13,7 +13,7 @@ done
 if [ ! -f "/etc/cron.d/amicron" ]
 then
 	cp ${DIR}/etc/cron.d/amicron /etc/cron.d/
-	chown root:root /etc/cron.d/amicropn
+	chown root:root /etc/cron.d/amicron
 	chmod 0600 /etc/cron.d/amicron
 fi
 
