@@ -14,10 +14,10 @@
 # set and uncomment the cron as you like
 
 # sunday snapshot expiring in one month
-#10 0     * * 6   root    /usr/bin/snapshot-my-ebs.sh -p ebs-backup "+1 month"
+#10 0     * * 6   root    /usr/bin/snapshot-my-ebs.sh -p ebs-backup -e "+1 month"
 
 # daily snapshot expiring in one week
-#0 0     * * *   root    /usr/bin/snapshot-my-ebs.sh -p "ebs-backup" "+1 week"
+#0 0     * * *   root    /usr/bin/snapshot-my-ebs.sh -p "ebs-backup" -e "+1 week"
 
 # monthly snapshot (on the 1st on each month) that will never expire
 #0 0     1 * *   root    /usr/bin/snapshot-my-ebs.sh -p ebs-backup
