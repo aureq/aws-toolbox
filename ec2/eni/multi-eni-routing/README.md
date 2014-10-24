@@ -23,8 +23,8 @@ For this script to work you need the following
 
 ## Use cases ##
 
-# You have an EC2 instance with 2 or more ENIs with 2 or more EIPs and you want your services publicly available.
-# You have an EC2 instance with 2 or more ENIs with 2 or more local IP and you want your services available on all IP addresses.
+* You have an EC2 instance with 2 or more ENIs with 2 or more EIPs and you want your services publicly available.
+* You have an EC2 instance with 2 or more ENIs with 2 or more local IP and you want your services available on all IP addresses.
 
 ## Notes ##
 This script is not compatible with any other existing software firewall (like `iptables`). As this script is mainly attended for AWS users, you should use the Security Groups and the Network ACLs to control your network rather than using a software based firewall. By offloading the network filtering to your Security Groups, you will make your instance more responsive (and simpler to manage).
