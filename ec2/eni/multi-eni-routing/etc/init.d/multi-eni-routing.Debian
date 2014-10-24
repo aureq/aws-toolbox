@@ -1,0 +1,51 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          multi-eni-routing
+# Required-Start:    $all
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:
+# Short-Description: Apply routing/firewall rules for multi ENI/IP
+### END INIT INFO
+
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+
+. /lib/init/vars.sh
+. /lib/lsb/init-functions
+
+do_start() {
+	if [ -x /usr/bin/multi-eni-routing.sh ]; then
+	        [ "$VERBOSE" != no ] && log_begin_msg "Applying routing/firewall rules for multi ENI/IP"
+		/usr/bin/multi-eni-routing.sh
+		ES=$?
+		[ "$VERBOSE" != no ] && log_end_msg $ES
+		return $ES
+	fi
+}
+
+do_stop() {
+	if [ -x /usr/bin/multi-eni-routing.sh ]; then
+	        [ "$VERBOSE" != no ] && log_begin_msg "Flushing routing/firewall rules for multi ENI/IP"
+		/usr/bin/multi-eni-routing.sh -f
+		ES=$?
+		[ "$VERBOSE" != no ] && log_end_msg $ES
+		return $ES
+	fi
+}
+
+case "$1" in
+    start)
+	do_start
+        ;;
+    restart|reload|force-reload)
+	do_stop && do_start
+        ;;
+    stop)
+	do_stop
+        ;;
+    *)
+        echo "Usage: $0 start|stop" >&2
+        exit 3
+        ;;
+esac
