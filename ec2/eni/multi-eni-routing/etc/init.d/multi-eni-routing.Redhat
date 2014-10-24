@@ -1,0 +1,60 @@
+#!/bin/sh
+#
+# multi-eni-routing          Apply routing/firewall rules for multi ENI/IP
+#
+# chkconfig: 2345 90 60
+# description: Apply routing/firewall rules for multi ENI/IP
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+do_start() {
+    if [ $UID -ne 0 ] ; then
+        echo "User has insufficient privilege."
+        exit 4
+    fi
+    [ -x /usr/bin/multi-eni-routing.sh ] || exit 5
+    echo -n "Starting multi-eni-routing: "
+    /usr/bin/multi-eni-routing.sh
+    retval=$?
+    [ "$retval" -eq 0 ] && success "ok"
+    [ "$retval" -eq 1 ] && failure "failed"
+    [ "$retval" -eq 2 ] && passed "skipped"
+}
+
+do_stop() {
+    if [ $UID -ne 0 ] ; then
+        echo "User has insufficient privilege."
+        exit 4
+    fi
+    [ -x /usr/bin/multi-eni-routing.sh ] || exit 5
+    echo -n "Stopping multi-eni-routing: "
+    /usr/bin/multi-eni-routing.sh
+    retval=$?
+    [ "$retval" -eq 0 ] && success "ok"
+    [ "$retval" -eq 1 ] && failure "failed"
+    [ "$retval" -eq 2 ] && passed "skipped"
+}
+
+do_restart() {
+    do_stop
+    do_start
+}
+
+case "$1" in
+    start)
+        do_start
+        ;;
+    stop)
+        do_stop
+        $1
+        ;;
+    restart|reload|force-reload)
+        do_restart
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|reload|force-reload}"
+        exit 2
+esac
+exit $?
+
