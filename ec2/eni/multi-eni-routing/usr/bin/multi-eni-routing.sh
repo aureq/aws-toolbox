@@ -148,7 +148,7 @@ fi
 
 if [ "$(ifconfig | sed -n 's/^\(eth[0-9]\).*/\1/p' | uniq | wc -l)" -lt 2 ]; then
 	echo "only one network interface detected. no actions needed."
-	exit 1
+	exit 2
 fi
 
 # remove any custom route tables
