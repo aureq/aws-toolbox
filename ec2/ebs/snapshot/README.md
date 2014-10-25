@@ -23,7 +23,7 @@ Once the snapshot has expired, the cleanup script will delete it.
 ## Requirements ##
 The scripts require very few things to work.
 * The AWS Command Line Interface(1)
- * (`apt-get`|`yum`) `install awscli`
+ * (`apt-get`|`yum`) `install` (`awscli`|`aws-cli`)
 * The `jq` tool
  * (`apt-get`|`yum`) `install jq`
 

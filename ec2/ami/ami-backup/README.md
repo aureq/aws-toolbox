@@ -23,7 +23,7 @@ Once an AMI has expired, the cleanup script will deregister your AMI and delete 
 ## Requirements ##
 The scripts require very few things to work.
 * The AWS Command Line Interface(1)
- * (`apt-get`|`yum`) `install awscli`
+ * (`apt-get`|`yum`) `install` (`awscli`|`aws-cli`)
 * The `jq` tool
  * (`apt-get`|`yum`) `install jq`
 
