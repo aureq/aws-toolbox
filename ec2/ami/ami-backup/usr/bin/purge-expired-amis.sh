@@ -77,7 +77,11 @@ do
 
 	for IMAGEID in $($AWS $PROFILE --region $REGION --output json ec2 describe-images --filters "Name=tag-key,Values=Expire" --filters "Name=tag-key,Values=Creator" --filters "Name=tag-value,Values=image-instance" | $JQ '.Images[].ImageId' | sed 's/"//g' )
 	do
-		EXPIRE=$($AWS $PROFILE --region $REGION --output json ec2 describe-images --image-ids "$IMAGEID" | $JQ '.Snapshots[].Tags[]' | grep -A1 -B2 'Expire' | $JQ '.Value' | sed 's/"//g')
+		EXPIRE=$($AWS $PROFILE --region $REGION --output json ec2 describe-images --image-ids "$IMAGEID" | $JQ '.Images[].Tags[]' | grep -A1 -B2 'Expire' | $JQ '.Value' | sed 's/"//g')
+		if [ -z "$EXPIRE" ]
+		then
+			echo "failed to get snapshot expiry date."
+		fi
 		EXPIRE=$(date --date="$EXPIRE" +%s)
 
 		if [ "$EXPIRE" -le "$TODAY" ]
@@ -102,6 +106,21 @@ do
 					fi
 				fi
 			done
+		fi
+	done
+
+	# remove orphan snapshots
+	for SNAPSHOTID in $($AWS  $PROFILE --output json --region $REGION ec2 describe-snapshots --filters  "Name=tag-key,Values=Expire" --filters "Name=tag-key,Values=Creator" --filters "Name=tag-value,Values=image-instance" | $JQ '.Snapshots[].SnapshotId' | sed 's/"//g')
+	do
+		EXPIRE=$($AWS $PROFILE --output json --region $REGION ec2 describe-snapshots --filters "Name=snapshot-id,Values=$SNAPSHOTID" | $JQ '.Snapshots[].Tags[]' | grep -A1 -B2 'Expire' | $JQ '.Value' | sed 's/"//g')
+		EXPIRE=$(date --date="$EXPIRE" +%s)
+		if [ "$EXPIRE" -le "$TODAY" ]
+		then
+			RETURN=$($AWS $PROFILE --output json --region $REGION ec2 delete-snapshot --snapshot-id "$SNAPSHOTID" | $JQ '.return' | sed 's/"//g')
+			if [ "$RETURN" != "true" ]
+			then
+				echo "cannot delete snapshot $SNAPSHOTID"
+			fi
 		fi
 	done
 done
