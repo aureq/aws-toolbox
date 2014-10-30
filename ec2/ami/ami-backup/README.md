@@ -47,6 +47,7 @@ You're welcome to request more features regarding these scripts, though I may no
 
 ## Acknowledgement ##
 Thanks to Colin for suggesting me this tool.
+Thanks to David for raising a bug and his suggestion to purge the orphan snapshots
 
 #### Resources ####
 1. AWS CLI: http://aws.amazon.com/cli/
