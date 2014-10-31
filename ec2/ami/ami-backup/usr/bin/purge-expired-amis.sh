@@ -80,7 +80,7 @@ do
 		EXPIRE=$($AWS $PROFILE --region $REGION --output json ec2 describe-images --image-ids "$IMAGEID" | $JQ '.Images[].Tags[]' | grep -A1 -B2 'Expire' | $JQ '.Value' | sed 's/"//g')
 		if [ -z "$EXPIRE" ]
 		then
-			echo "failed to get snapshot expiry date."
+			echo "failed to get snapshot expiry date for ${IMAGEID}."
 		fi
 		EXPIRE=$(date --date="$EXPIRE" +%s)
 
@@ -90,7 +90,7 @@ do
 			RETURN=$($AWS $PROFILE --region $REGION --output json ec2 deregister-image --image-id "$IMAGEID" | $JQ '.return' | sed 's/"//g')
 			if [ "$RETURN" != "true" ]
 			then
-				echo "cannot deregister ami $IMAGEID"
+				echo "cannot deregister ami ${IMAGEID}."
 				continue
 			fi
 			for SNAPSHOTID in $SNAPSHOTS
@@ -125,6 +125,10 @@ do
 		fi
 
 		EXPIRE=$($AWS $PROFILE --output json --region $REGION ec2 describe-snapshots --filters "Name=snapshot-id,Values=$SNAPSHOTID" | $JQ '.Snapshots[].Tags[]' | grep -A1 -B2 'Expire' | $JQ '.Value' | sed 's/"//g')
+		if [ -z "$EXPIRE" ]
+		then
+			echo "failed to get snapshot expiry date for ${SNAPSHOTID}."
+		fi
 		EXPIRE=$(date --date="$EXPIRE" +%s)
 		if [ "$EXPIRE" -le "$TODAY" ]
 		then
