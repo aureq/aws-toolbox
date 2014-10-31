@@ -81,6 +81,7 @@ do
 		if [ -z "$EXPIRE" ]
 		then
 			echo "failed to get snapshot expiry date for ${IMAGEID}."
+			continue
 		fi
 		EXPIRE=$(date --date="$EXPIRE" +%s)
 
@@ -96,6 +97,11 @@ do
 			for SNAPSHOTID in $SNAPSHOTS
 			do
 				EXPIRE=$($AWS $PROFILE --output json --region $REGION ec2 describe-snapshots --filters "Name=snapshot-id,Values=$SNAPSHOTID" | $JQ '.Snapshots[].Tags[]' | grep -A1 -B2 'Expire' | $JQ '.Value' | sed 's/"//g')
+				if [ -z "$EXPIRE" ]
+				then
+					echo "failed to get snapshot expiry date for ${IMAGEID}."
+					continue
+				fi
 				EXPIRE=$(date --date="$EXPIRE" +%s)
 				if [ "$EXPIRE" -le "$TODAY" ]
 				then
@@ -128,6 +134,7 @@ do
 		if [ -z "$EXPIRE" ]
 		then
 			echo "failed to get snapshot expiry date for ${SNAPSHOTID}."
+			continue
 		fi
 		EXPIRE=$(date --date="$EXPIRE" +%s)
 		if [ "$EXPIRE" -le "$TODAY" ]
