@@ -19,6 +19,7 @@ The files included in this folder and its subfolders are here to help you automa
 In addition of creating AMIs, the creation script offers the ability to set an expiry date (or a retention period).
 
 Once an AMI has expired, the cleanup script will deregister your AMI and delete the subsequent snapshots.
+If an AMI has been deregistered, then each orphan snapshots are checked. An orphan snapshot is deleted only after it has expired.
 
 ## Requirements ##
 The scripts require very few things to work.
