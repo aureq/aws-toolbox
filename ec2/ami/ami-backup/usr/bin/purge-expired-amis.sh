@@ -110,8 +110,20 @@ do
 	done
 
 	# remove orphan snapshots
+
+	# list of snapshots associated to AMIs
+	ASSOCIATEDSNAPSHOTSID=$($AWS  $PROFILE --output json --region $REGION ec2 describe-images --filters "Name=tag-key,Values=Expire" --filters "Name=tag-key,Values=Creator" --filters "Name=tag-value,Values=image-instance" | jq '.Images[].BlockDeviceMappings[].Ebs.SnapshotId' | grep -v null | sed 's/"//g')
+
+	# all snapshots, including orphans
 	for SNAPSHOTID in $($AWS  $PROFILE --output json --region $REGION ec2 describe-snapshots --filters  "Name=tag-key,Values=Expire" --filters "Name=tag-key,Values=Creator" --filters "Name=tag-value,Values=image-instance" | $JQ '.Snapshots[].SnapshotId' | sed 's/"//g')
 	do
+		if [[ "$ASSOCIATEDSNAPSHOTSID" =~ "$SNAPSHOTID" ]]
+		then
+			# this snapshot was found in the list of associated snapshots.
+			# trying to delete this snapshot will fail, so we skip it.
+			continue;
+		fi
+
 		EXPIRE=$($AWS $PROFILE --output json --region $REGION ec2 describe-snapshots --filters "Name=snapshot-id,Values=$SNAPSHOTID" | $JQ '.Snapshots[].Tags[]' | grep -A1 -B2 'Expire' | $JQ '.Value' | sed 's/"//g')
 		EXPIRE=$(date --date="$EXPIRE" +%s)
 		if [ "$EXPIRE" -le "$TODAY" ]
