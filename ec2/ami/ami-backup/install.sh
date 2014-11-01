@@ -10,7 +10,7 @@ do
 	chmod 0755 /${x}
 done
 
-if [ ! -f "/etc/cron.d/amicron" ]
+if [ ! -e "/etc/cron.d/amicron" ]
 then
 	cp ${DIR}/etc/cron.d/amicron /etc/cron.d/
 	chown root:root /etc/cron.d/amicron
