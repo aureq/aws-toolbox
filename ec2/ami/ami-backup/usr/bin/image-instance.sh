@@ -92,7 +92,7 @@ fi
 DATE=$(date)
 UNIX_TS=$(date +%s)
 
-INSTANCE_NAME=$($AWS $PROFILE --region $REGION --output json ec2 describe-instances --instance-ids "${INSTANCE_ID}" | $JQ '.Reservations[].Instances[].Tags[]' 2>/dev/null | grep -A1 -B2 'Name' | $JQ '.Value' | sed 's/"//g')
+INSTANCE_NAME=$($AWS $PROFILE --region $REGION --output json ec2 describe-instances --instance-ids "${INSTANCE_ID}" | $JQ '.Reservations[].Instances[].Tags[]? | select(.Key == "Name") | .Value' | sed 's/"//g')
 if [ -z "$INSTANCE_NAME" ]
 then
 	INSTANCE_NAME="$INSTANCE_ID"
