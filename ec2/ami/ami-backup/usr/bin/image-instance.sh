@@ -148,9 +148,9 @@ then
 	exit 1
 fi
 
-# Please note that it's important to tag also the associated snapshots
-# because when an image is deregistered, the associated snapshots are *not* deleted.
-for SNAPSHOT in $($AWS $PROFILE --output json --region $REGION ec2 describe-images --image-ids "$IMAGE_ID" | $JQ '.Images[].BlockDeviceMappings[]' | grep 'SnapshotId' | awk '{print $2}' | sed 's/[",]//g')
+# Please note that it's important to tag the associated snapshots
+# because when an image is deregistered, its snapshots are *not* deleted.
+for SNAPSHOT in $($AWS $PROFILE --output json --region $REGION ec2 describe-images --image-ids "$IMAGE_ID" | $JQ '.Images[].BlockDeviceMappings[] | select(.Ebs.SnapshotId) | .Ebs.SnapshotId' | sed 's/[",]//g')
 do
 	$AWS $PROFILE --output json --region $REGION ec2 create-tags --resources "$SNAPSHOT" --tags \
 		"Key=Name,Value=backup-ami@$INSTANCE_NAME" \
