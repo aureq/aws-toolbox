@@ -75,12 +75,12 @@ fi
 for REGION in $REGIONS
 do
 
-	for IMAGEID in $($AWS $PROFILE --region $REGION --output json ec2 describe-images --filters "Name=tag-key,Values=Expire" --filters "Name=tag-key,Values=Creator" --filters "Name=tag-value,Values=image-instance" | $JQ '.Images[].ImageId' | sed 's/"//g' )
+	for IMAGEID in $($AWS $PROFILE --region $REGION --output json ec2 describe-images --filters "Name=tag:Creator,Values=image-instance" --filters "Name=tag:Expire,Values=*" | $JQ '.Images[].ImageId' | sed 's/"//g' )
 	do
 		EXPIRE=$($AWS $PROFILE --region $REGION --output json ec2 describe-images --image-ids "$IMAGEID" | $JQ '.Images[].Tags[]' | grep -A1 -B2 'Expire' | $JQ '.Value' | sed 's/"//g')
 		if [ -z "$EXPIRE" ]
 		then
-			echo "failed to get snapshot expiry date for ${IMAGEID}."
+			# some ami may not have expiry date. skipping them silently
 			continue
 		fi
 		EXPIRE=$(date --date="$EXPIRE" +%s)
@@ -118,10 +118,11 @@ do
 	# remove orphan snapshots
 
 	# list of snapshots associated to AMIs
-	ASSOCIATEDSNAPSHOTSID=$($AWS  $PROFILE --output json --region $REGION ec2 describe-images --filters "Name=tag-key,Values=Expire" --filters "Name=tag-key,Values=Creator" --filters "Name=tag-value,Values=image-instance" | jq '.Images[].BlockDeviceMappings[].Ebs.SnapshotId' | grep -v null | sed 's/"//g')
+	ASSOCIATEDSNAPSHOTSID=$($AWS  $PROFILE --output json --region $REGION ec2 describe-images --filters "Name=tag:Creator,Values=image-instance" --filters "Name=tag:Expire,Values=*" | $JQ '.Images[].BlockDeviceMappings[].Ebs.SnapshotId' | grep -v null | sed 's/"//g')
+--filter "Name=tag:Creator,Values=image-instance" --filters "Name=tag:Expire,Values=*"
 
 	# all snapshots, including orphans
-	for SNAPSHOTID in $($AWS  $PROFILE --output json --region $REGION ec2 describe-snapshots --filters  "Name=tag-key,Values=Expire" --filters "Name=tag-key,Values=Creator" --filters "Name=tag-value,Values=image-instance" | $JQ '.Snapshots[].SnapshotId' | sed 's/"//g')
+	for SNAPSHOTID in $($AWS  $PROFILE --output json --region $REGION ec2 describe-snapshots --filter "Name=tag:Creator,Values=image-instance" --filters "Name=tag:Expire,Values=*" | $JQ '.Snapshots[].SnapshotId' | sed 's/"//g')
 	do
 		if [[ "$ASSOCIATEDSNAPSHOTSID" =~ "$SNAPSHOTID" ]]
 		then
