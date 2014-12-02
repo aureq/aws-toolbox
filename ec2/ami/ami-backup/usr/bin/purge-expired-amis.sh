@@ -119,7 +119,6 @@ do
 
 	# list of snapshots associated to AMIs
 	ASSOCIATEDSNAPSHOTSID=$($AWS  $PROFILE --output json --region $REGION ec2 describe-images --filters "Name=tag:Creator,Values=image-instance" --filters "Name=tag:Expire,Values=*" | $JQ '.Images[].BlockDeviceMappings[].Ebs.SnapshotId' | grep -v null | sed 's/"//g')
---filter "Name=tag:Creator,Values=image-instance" --filters "Name=tag:Expire,Values=*"
 
 	# all snapshots, including orphans
 	for SNAPSHOTID in $($AWS  $PROFILE --output json --region $REGION ec2 describe-snapshots --filter "Name=tag:Creator,Values=image-instance" --filters "Name=tag:Expire,Values=*" | $JQ '.Snapshots[].SnapshotId' | sed 's/"//g')
