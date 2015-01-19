@@ -4,7 +4,12 @@
  * Usage:  credential-validator.php
  */
 
-require_once('PHPMailer/PHPMailerAutoload.php');
+if ( ! file_exists(__DIR__.'/PHPMailer/PHPMailerAutoload.php') ) {
+	echo "You need to install PHPMailer";
+	exit(1);
+}
+
+require_once(__DIR__.'/PHPMailer/PHPMailerAutoload.php');
 
 $ses_regions = array(
 	1 => 'us-east-1',
@@ -57,8 +62,6 @@ echo "Summary:\n\t- Server: {$mail->Host}:{$mail->Port}\n\t- User: {$mail->Usern
 
 try {
 	$r = $mail->SmtpConnect();
-
-	var_dump($r);
 	if ( $r === true ) {
 		echo "SMTP authentication succeeded.";
 	} else {
