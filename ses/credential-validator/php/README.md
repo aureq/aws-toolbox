@@ -21,6 +21,7 @@ The script requires very few things to work.
 * PHP for the command line
  * `apt-get install php5-cli`
 * PHPMailer(1)
+ * From the cloned repository, run the commands below
  * `git submodule init`
  * `git submodule update`
 * A valid SMTP credentials as generated using the SES Management Console
