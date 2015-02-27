@@ -1,3 +1,6 @@
 [submodule "ses/credential-validator/php/PHPMailer"]
 	path = ses/credential-validator/php/PHPMailer
 	url = https://github.com/PHPMailer/PHPMailer.git
+[submodule "ses/sending-email-example/php/PHPMailer"]
+	path = ses/sending-email-example/php/PHPMailer
+	url = https://github.com/PHPMailer/PHPMailer.git
