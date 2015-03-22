@@ -6,6 +6,7 @@
       "Effect": "Allow",
       "Action": [
         "ec2:Describe*",
+        "ec2:CopyImage",
         "ec2:CreateImage",
         "ec2:CreateSnapshot",
         "ec2:CreateTags",
