@@ -19,6 +19,9 @@
 # daily snapshot expiring in one week
 #0 0     * * *   root    /usr/bin/image-instance.sh -p ami-backup -e "+1 week"
 
+# monthly snapshot, expiring after 3 months, copied to eu-west-1
+#0 0	1 * *	root	/usr/bin/image-instance.sh -p ami-backup -e "+3 months" -d eu-west-1
+
 # monthly snapshot (on the 1st on each month) that will never expire
 # this command will use the profile 'default'
 #0 0     1 * *   root    /usr/bin/image-instance.sh
