@@ -17,9 +17,11 @@ THE SOFTWARE.
 The files included in this folder and its subfolders are here to help you automate the creation of an Amazon Machine Image (AMI) using the Amazon Command Line Interface(1).
 
 In addition of creating AMIs, the creation script offers the ability to set an expiry date (or a retention period).
-
-Once an AMI has expired, the cleanup script will deregister your AMI and delete the subsequent snapshots.
+Once an AMI has expired, the cleanup script will deregister your AMI and delete associated snapshots.
 If an AMI has been deregistered, then each orphan snapshots are checked. An orphan snapshot is deleted only after it has expired.
+
+For off-site backup and regulatory compliance, you may also send a copy of your AMI to a different region.
+The same expiry policy will be applied.
 
 ## Requirements ##
 The scripts require very few things to work.
@@ -49,6 +51,7 @@ You're welcome to request more features regarding these scripts, though I may no
 ## Acknowledgement ##
 Thanks to Colin for suggesting me this tool.
 Thanks to David for raising a bug and his suggestion to purge the orphan snapshots
+Thanks to John for requesting the cross-region copy
 
 #### Resources ####
 1. AWS CLI: http://aws.amazon.com/cli/
