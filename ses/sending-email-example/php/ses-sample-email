@@ -1,0 +1,116 @@
+#!/usr/bin/env php
+<?php
+/*
+ * Usage:  ses-sample-email
+ */
+
+if ( ! file_exists(__DIR__.'/PHPMailer/PHPMailerAutoload.php') ) {
+	echo "You need to install PHPMailer";
+	exit(1);
+}
+
+require_once(__DIR__.'/PHPMailer/PHPMailerAutoload.php');
+
+$ses_regions = array(
+	1 => 'us-east-1',
+	2 => 'us-west-2',
+	3 => 'eu-west-1',
+);
+
+$ses_ports = array (
+	1 => 'smtp (port 25)',
+	2 => 'ssmtp (port 465)',
+	3 => 'submission (port 587)',
+	4 => 'alt ssmtp (port 2465)',
+	5 => 'alt submission (port 2587)',
+);
+
+$port_mapping = array (
+	1 => 25,
+	2 => 465,
+	3 => 587,
+	4 => 2465,
+	5 => 2587,
+);
+
+function prompt($prompt = '') {
+	echo $prompt;
+	return trim(fgets(STDIN), "\n" );
+}
+
+function hidden_pass($pass,$x = 5) {
+	return str_pad(
+		substr($pass, 0, $x),
+		strlen($pass)-(2*$x),
+		'*',
+		STR_PAD_RIGHT)
+	.substr($pass, (0-$x));
+
+}
+
+echo "Please select one of the 3 SES region\n";
+foreach($ses_regions as $k => $r) echo "\t$k - $r\n";
+$region = prompt("Which SES region: ");
+
+echo "Please select a valid SMTP port\n";
+foreach($ses_ports as $k => $p) echo "\t$k - $p\n";
+$port = prompt("Which SMTP Port: ");
+
+$encrypt = prompt("Do you wish to enable encryption (recommended)? [Y/n] ");
+
+$login = prompt("Please enter your SES login (AKIA...): ");
+$pass = prompt("Please enter your SES password: ");
+$xpass = hidden_pass($pass);
+
+$mail = new PHPMailer(true);
+$mail->isSMTP();
+$mail->SMTPAuth = true;
+$mail->Host = 'email-smtp.'.$ses_regions[$region].'.amazonaws.com';
+$mail->Port = $port_mapping[$port];
+$mail->Username  = $login;
+$mail->Password = $pass;
+
+if ( strcasecmp($encrypt, "no") !== 0 && strcasecmp($encrypt, "n") !== 0) {
+	$mail->SMTPSecure = 'tls';
+	if ( $mail->Port == 465 || $mail->Port == 2465 ) $mail->SMTPSecure = 'ssl';
+}
+
+echo "Summary:\n\t- Server: {$mail->Host}:{$mail->Port}\n\t- User: {$mail->Username}\n\t- Pass: {$xpass}\n\t- Encryption: ".(strlen($mail->SMTPSecure) == 0 ? 'None' : $mail->SMTPSecure)."\n";
+
+echo "Please enter the Sender email address (From). It must be a verified email address or part of a verified domain.\n";
+$from = prompt("Sender email address: ");
+echo "Please enter the recipient email address. If you don't have production access, the destination must be a verified email address or part of a verified domain.\n";
+$to = prompt("Recipient email address: ");
+
+$html = prompt("Do you want to use multi-part (html) email? [Y/n] ");
+
+if ( strcasecmp($html, "no") !== 0 && strcasecmp($html, "n") !== 0) {
+	$mail->IsHTML(true);
+	$mail->Body = prompt("HTML message (one line only)? :\n");
+	$mail->AltBody = prompt("Alternative TEXT message (one line only)? :\n");
+} else	$mail->Body = prompt("TEXT message (one line only)? :\n");
+
+$mail->From = $from;
+$mail->AddAddress($to);
+$mail->Subject = 'This is a test message';
+
+try {
+	$r = $mail->SmtpConnect();
+	if ( $r === true ) {
+		echo "SMTP authentication succeeded.\n";
+	} else {
+		echo "SMTP authntication failed.\n";
+		die();
+	}
+	$r = $mail->Send();
+	if ( $r === true ) {
+		echo "Message sent.\n";
+	} else {
+		echo "Message NOT sent.\n";
+	}
+} catch (Exception $e) {
+	echo "An execption has been received: ". $e->getMessage();
+	die();
+}
+
+
