@@ -45,6 +45,15 @@ The third step is to configure when the scripts will be run and an eventual rete
 - `usr/bin/image-instance.sh`: Create an AMI for the local instance or the instance specified by `-i`. You may specify the retention period by appending a date or a period as specified by the date(4) command. Possible examples are `'+1 week'`, `'next month'` or `'42 days'`. Call the script with `-h` for a complete list of options.
 - `usr/bin/purge-expired-amis.sh`: This script deregisters all your expired AMIs and the associated snapshots. Call the script with `-h` for a complete list of options.
 
+### Options for `image-instance.sh` ###
+Here is a detailed description of each option available for `image-instance.sh`
+* `-p profile_name`: The `aws` profile name that was configured above. The default profile is `default`. This option determines which profile will be used and hence which set of IAM credentials will be used when sending queries to AWS.
+* `-i instance_id`: This allows you to specify the instance ID you want to backup. If this parameter is omitted, the script will try to guess the local instance ID by sending a query to the meta-data server.
+* `-r region`: Indicates in which AWS region the specified instance (`-i`) is running from. If this parameter is omitted, the script will query the meta-data server to determine the local region.
+* `-e expiry_date`: The script has the ability to tag the resulting AMI and set an expiry date. Possible values are `'+1 week'`, `'next month'` or `'42 days'`. This allows you to enforce a retention policy on your AMI. If the parameter is not specified, then no tag is applied and your AMI will not be purged.
+* `-d region`: when specified, this option allows you to copy the resulting AMI to a different `region`. The copied AMI automatically inherits any existing tags. If the parameter is omitted, then no copy of the AMI is performed. You may consider this option carefully at extra data transfer may be applied to your AWS account.
+* `-t timeout`: When an AMI copy is initiated, it may take a while to fully complete depending on the AMI size. This defines an acceptable time-out before the script stops. The default value is `28800` (8 hours), but you may increase is for larger AMIs.
+
 ## Feature requests ##
 You're welcome to request more features regarding these scripts, though I may not implement all of them as I develop and maintain these scripts on my spare time. You are also invited to issue a pull request with a meaningful description of your changes.
 
