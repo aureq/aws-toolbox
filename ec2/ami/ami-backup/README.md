@@ -23,6 +23,13 @@ If an AMI has been deregistered, then each orphan snapshots are checked. An orph
 For off-site backup and regulatory compliance, you may also send a copy of your AMI to a different region.
 The same expiry policy will be applied.
 
+## Features ##
+* Takes an AMI of an EC2 instance, from any region
+* Applies tags to easy identification
+* Adds expiry tag to enforce retention policy
+* Supports cross-region copy of your AMI
+* Can be executed from anywhere as long as you have internet access
+
 ## Requirements ##
 The scripts require very few things to work.
 * The AWS Command Line Interface(1)
