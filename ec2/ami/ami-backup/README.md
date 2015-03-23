@@ -49,9 +49,9 @@ The third step is to configure when the scripts will be run and an eventual rete
 You're welcome to request more features regarding these scripts, though I may not implement all of them as I develop and maintain these scripts on my spare time. You are also invited to issue a pull request with a meaningful description of your changes.
 
 ## Acknowledgement ##
-Thanks to Colin for suggesting me this tool.
-Thanks to David for raising a bug and his suggestion to purge the orphan snapshots
-Thanks to John for requesting the cross-region copy
+* Thanks to Colin for suggesting me this tool.
+* Thanks to David L. for raising a bug and his suggestion to purge the orphan snapshots
+* Thanks to John for requesting the cross-region copy
 
 #### Resources ####
 1. AWS CLI: http://aws.amazon.com/cli/
