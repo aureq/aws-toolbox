@@ -1,4 +1,4 @@
-aws-toolbox/ses/credential-validator/php
+aws-toolbox/ses/sending-email-example/php
 =========
 
 ## Audience ##
