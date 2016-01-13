@@ -79,6 +79,14 @@ echo "Summary:\n\t- Server: {$mail->Host}:{$mail->Port}\n\t- User: {$mail->Usern
 
 echo "Please enter the Sender email address (From). It must be a verified email address or part of a verified domain.\n";
 $from = prompt("Sender email address: ");
+
+$crossAccount = prompt("Is the 'From' address part of a cross-account delegation? (ie: an identity verified in another account) ");
+if ( strcasecmp($crossAccount, "no") !== 0 && strcasecmp($crossAccount, "n") !== 0) {
+	$crossAccountHeader = prompt("Please enter the cross-acount identity ARN: ");
+	$mail->addCustomHeader('X-SES-SOURCE-ARN: '.$crossAccountHeader);
+	$mail->addCustomHeader('X-SES-FROM-ARN: '.$crossAccountHeader);
+}
+
 echo "Please enter the recipient email address. If you don't have production access, the destination must be a verified email address or part of a verified domain.\n";
 $to = prompt("Recipient email address: ");
 
@@ -86,13 +94,15 @@ $html = prompt("Do you want to use multi-part (html) email? [Y/n] ");
 
 if ( strcasecmp($html, "no") !== 0 && strcasecmp($html, "n") !== 0) {
 	$mail->IsHTML(true);
-	$mail->Body = prompt("HTML message (one line only)? :\n");
+	$mail->Body = file_get_contents(prompt("File containing the HTML message (ie 'message-body.html')? :\n"));
 	$mail->AltBody = prompt("Alternative TEXT message (one line only)? :\n");
 } else	$mail->Body = prompt("TEXT message (one line only)? :\n");
 
 $mail->From = $from;
 $mail->AddAddress($to);
 $mail->Subject = 'This is a test message';
+
+echo "\nSending message to SES...\n";
 
 try {
 	$r = $mail->SmtpConnect();
