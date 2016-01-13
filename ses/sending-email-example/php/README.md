@@ -45,6 +45,7 @@ You're welcome to request more features regarding these scripts, though I may no
 
 ## Acknowledgement ##
 Thanks to James who had a need for this tool.
+Thanks to Russell who needed an example of a SES cross-acount message
 
 #### Resources ####
 1. PHPMailer: https://github.com/PHPMailer/PHPMailer
