@@ -77,7 +77,7 @@ do
 
 	for IMAGEID in $($AWS $PROFILE --region $REGION --output json ec2 describe-images --filters "Name=tag:Creator,Values=image-instance" --filters "Name=tag:Expire,Values=*" | $JQ '.Images[].ImageId' | sed 's/"//g' )
 	do
-		EXPIRE=$($AWS $PROFILE --region $REGION --output json ec2 describe-images --image-ids "$IMAGEID" | $JQ '.Images[].Tags[]' | grep -A1 -B2 'Expire' | $JQ '.Value' | sed 's/"//g')
+		EXPIRE=$($AWS $PROFILE --region $REGION --output json ec2 describe-images --image-ids "$IMAGEID" | $JQ --sort-keys '.Images[].Tags[]' | grep -A2 -B1 'Expire' | $JQ '.Value' | sed 's/"//g')
 		if [ -z "$EXPIRE" ]
 		then
 			# some ami may not have expiry date. skipping them silently
@@ -96,7 +96,7 @@ do
 			fi
 			for SNAPSHOTID in $SNAPSHOTS
 			do
-				EXPIRE=$($AWS $PROFILE --output json --region $REGION ec2 describe-snapshots --filters "Name=snapshot-id,Values=$SNAPSHOTID" | $JQ '.Snapshots[].Tags[]' | grep -A1 -B2 'Expire' | $JQ '.Value' | sed 's/"//g')
+				EXPIRE=$($AWS $PROFILE --output json --region $REGION ec2 describe-snapshots --filters "Name=snapshot-id,Values=$SNAPSHOTID" | $JQ --sort-keys '.Snapshots[].Tags[]' | grep -A2 -B1 'Expire' | $JQ '.Value' | sed 's/"//g')
 				if [ -z "$EXPIRE" ]
 				then
 					echo "failed to get snapshot expiry date for ${IMAGEID}."
@@ -130,7 +130,7 @@ do
 			continue;
 		fi
 
-		EXPIRE=$($AWS $PROFILE --output json --region $REGION ec2 describe-snapshots --filters "Name=snapshot-id,Values=$SNAPSHOTID" | $JQ '.Snapshots[].Tags[]' | grep -A1 -B2 'Expire' | $JQ '.Value' | sed 's/"//g')
+		EXPIRE=$($AWS $PROFILE --output json --region $REGION ec2 describe-snapshots --filters "Name=snapshot-id,Values=$SNAPSHOTID" | $JQ --sort-keys '.Snapshots[].Tags[]' | grep -A2 -B1 'Expire' | $JQ '.Value' | sed 's/"//g')
 		if [ -z "$EXPIRE" ]
 		then
 			echo "failed to get snapshot expiry date for ${SNAPSHOTID}."
